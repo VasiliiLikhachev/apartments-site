@@ -136,53 +136,100 @@
     .hero-img-placeholder .ph-icon { font-size: 3rem; opacity: 0.4; }
 
     /* ══════════════════════════════
-       GALLERY (под hero)
+       CAROUSEL (под hero)
     ══════════════════════════════ */
-    #gallery { background: var(--bg-dark); padding: 0 0 80px; }
-    .gallery-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
+    #gallery { background: var(--bg-dark); padding: 0 0 60px; overflow: hidden; }
+
+    .carousel-wrap {
+      position: relative;
+      width: 100%;
+      /* показываем боковые фото на ~18% с каждой стороны */
+      padding: 0 18%;
     }
-    .gallery-item {
-      aspect-ratio: 4/3; overflow: hidden; border-radius: 8px;
-      background: var(--bg-card2);
-      cursor: pointer; position: relative;
+    .carousel-track {
+      display: flex;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      will-change: transform;
     }
-    .gallery-item img {
-      width: 100%; height: 100%; object-fit: cover;
-      transition: transform 0.4s ease, filter 0.3s;
-      filter: brightness(0.85);
+    .carousel-slide {
+      flex: 0 0 100%;
+      padding: 0 8px;
+      transition: opacity 0.4s, transform 0.4s;
     }
-    .gallery-item:hover img { transform: scale(1.06); filter: brightness(1); }
-    .gallery-item.wide { grid-column: span 2; }
-    .gallery-placeholder {
-      width: 100%; height: 100%;
+    .carousel-slide img {
+      width: 100%; aspect-ratio: 16/10;
+      object-fit: cover;
+      border-radius: 14px;
+      display: block;
+      filter: brightness(0.5) scale(0.96);
+      transform-origin: center;
+      transition: filter 0.4s, transform 0.4s;
+      cursor: pointer;
+    }
+    .carousel-slide.active img {
+      filter: brightness(1) scale(1);
+      transform: scale(1);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    /* Стрелки */
+    .carousel-btn {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      z-index: 10;
+      background: rgba(13,30,46,0.75);
+      border: 1px solid rgba(79,195,195,0.3);
+      color: var(--accent);
+      width: 44px; height: 44px; border-radius: 50%;
+      font-size: 1.3rem; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.6rem; opacity: 0.18;
+      transition: background 0.2s, border-color 0.2s;
+      backdrop-filter: blur(6px);
+    }
+    .carousel-btn:hover { background: rgba(79,195,195,0.15); border-color: var(--accent); }
+    .carousel-btn.prev { left: calc(18% - 22px); }
+    .carousel-btn.next { right: calc(18% - 22px); }
+
+    /* Точки */
+    .carousel-dots {
+      display: flex; justify-content: center; gap: 8px;
+      margin-top: 20px;
+    }
+    .carousel-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--bg-card); border: 1px solid rgba(79,195,195,0.2);
+      cursor: pointer; transition: background 0.3s, transform 0.3s;
+    }
+    .carousel-dot.active {
+      background: var(--accent); transform: scale(1.3);
     }
 
     /* Lightbox */
     .lightbox {
       display: none; position: fixed; inset: 0; z-index: 999;
-      background: rgba(0,0,0,0.92);
+      background: rgba(0,0,0,0.93);
       align-items: center; justify-content: center;
     }
     .lightbox.active { display: flex; }
-    .lightbox img { max-width: 90vw; max-height: 90vh; border-radius: 8px; }
+    .lightbox img { max-width: 92vw; max-height: 90vh; border-radius: 10px; }
     .lightbox-close {
-      position: absolute; top: 24px; right: 28px;
+      position: absolute; top: 22px; right: 26px;
       color: white; font-size: 2rem; cursor: pointer;
-      background: none; border: none; line-height: 1;
+      background: none; border: none; line-height: 1; opacity: 0.8;
     }
+    .lightbox-close:hover { opacity: 1; }
     .lb-prev, .lb-next {
       position: absolute; top: 50%; transform: translateY(-50%);
-      background: rgba(255,255,255,0.1); border: none; color: white;
-      font-size: 1.8rem; padding: 12px 18px; cursor: pointer;
+      background: rgba(255,255,255,0.08); border: none; color: white;
+      font-size: 2rem; padding: 10px 16px; cursor: pointer;
       border-radius: 8px; transition: background 0.2s;
     }
-    .lb-prev { left: 20px; } .lb-next { right: 20px; }
-    .lb-prev:hover, .lb-next:hover { background: rgba(255,255,255,0.2); }
+    .lb-prev { left: 16px; } .lb-next { right: 16px; }
+    .lb-prev:hover, .lb-next:hover { background: rgba(255,255,255,0.18); }
+
+    @media (max-width: 640px) {
+      .carousel-wrap { padding: 0 10%; }
+      .carousel-btn.prev { left: calc(10% - 22px); }
+      .carousel-btn.next { right: calc(10% - 22px); }
+    }
 
     /* ══════════════════════════════
        2. МЕТРО И ТРАНСПОРТ
@@ -454,12 +501,9 @@
       .metro-grid { grid-template-columns: 1fr; }
       .wifi-networks { flex-direction: column; }
       .contact-card { flex-direction: column; gap: 20px; padding: 28px 24px; }
-      .gallery-grid { grid-template-columns: repeat(2, 1fr); }
-      .gallery-item.wide { grid-column: span 1; }
     }
     @media (max-width: 540px) {
       .nav-links { display: none; }
-      .gallery-grid { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
 </head>
@@ -508,32 +552,16 @@
   </div>
 </section>
 
-<!-- ══ GALLERY ══ -->
+<!-- ══ CAROUSEL ══ -->
 <section id="gallery">
-  <div class="container">
-    <!--
-      ГАЛЕРЕЯ: положите фото в папку images/ с именами:
-      photo1.jpg, photo2.jpg, photo3.jpg, photo4.jpg, photo5.jpg
-      Первое (photo1) будет большим (широким).
-    -->
-    <div class="gallery-grid" id="galleryGrid">
-      <div class="gallery-item wide" data-src="images/photo1.jpg">
-        <div class="gallery-placeholder">🛋️</div>
-      </div>
-      <div class="gallery-item" data-src="images/photo2.jpg">
-        <div class="gallery-placeholder">🛏️</div>
-      </div>
-      <div class="gallery-item" data-src="images/photo3.jpg">
-        <div class="gallery-placeholder">🍳</div>
-      </div>
-      <div class="gallery-item" data-src="images/photo4.jpg">
-        <div class="gallery-placeholder">🚿</div>
-      </div>
-      <div class="gallery-item" data-src="images/photo5.jpg">
-        <div class="gallery-placeholder">🪟</div>
-      </div>
+  <div class="carousel-wrap" id="carouselWrap">
+    <div class="carousel-track" id="carouselTrack">
+      <!-- слайды добавляются через JS -->
     </div>
+    <button class="carousel-btn prev" id="cPrev">&#8249;</button>
+    <button class="carousel-btn next" id="cNext">&#8250;</button>
   </div>
+  <div class="carousel-dots" id="carouselDots"></div>
 </section>
 
 <!-- Lightbox -->
@@ -924,40 +952,98 @@
     if (wrap) wrap.style.transform = `translateY(${window.scrollY * 0.28}px)`;
   });
 
-  /* ── Try loading images (hero + gallery) ── */
+  /* ── Images ── */
   function tryImg(src, onSuccess) {
     const img = new Image();
     img.onload = () => onSuccess(img);
     img.src = src;
   }
 
-  // Hero main photo
+  // Hero
   tryImg('images/main.jpg', img => {
-    const wrap = document.getElementById('heroImgWrap');
     const ph = document.getElementById('heroPlaceholder');
-    img.className = 'hero-img'; img.alt = 'Квартира';
-    ph.replaceWith(img);
+    if (ph) { img.className = 'hero-img'; img.alt = 'Квартира'; ph.replaceWith(img); }
   });
 
-  // Gallery photos
-  const galleryItems = document.querySelectorAll('.gallery-item');
-  const loadedSrcs = [];
-  galleryItems.forEach((item, i) => {
-    const src = item.dataset.src;
+  /* ── Carousel ── */
+  const PHOTOS = [
+    'images/photo1.jpg','images/photo2.jpg','images/photo3.jpg',
+    'images/photo4.jpg','images/photo5.jpg','images/photo6.jpg','images/photo7.jpg'
+  ];
+  const track   = document.getElementById('carouselTrack');
+  const dotsWrap= document.getElementById('carouselDots');
+  let carouselSrcs = [];
+  let curIdx = 0;
+
+  // Строим слайды по мере загрузки фото
+  PHOTOS.forEach((src, i) => {
     tryImg(src, img => {
+      carouselSrcs.push(src);
+      const slide = document.createElement('div');
+      slide.className = 'carousel-slide' + (carouselSrcs.length === 1 ? ' active' : '');
+      slide.dataset.idx = carouselSrcs.length - 1;
       img.alt = `Фото ${i+1}`;
-      item.innerHTML = '';
-      item.appendChild(img);
-      loadedSrcs.push({ el: item, src });
-      item.addEventListener('click', () => openLb(src));
+      img.addEventListener('click', () => {
+        const idx = parseInt(slide.dataset.idx);
+        if (idx === curIdx) openLb(idx);
+        else goTo(idx);
+      });
+      slide.appendChild(img);
+      track.appendChild(slide);
+
+      // dot
+      const dot = document.createElement('button');
+      dot.className = 'carousel-dot' + (carouselSrcs.length === 1 ? ' active' : '');
+      dot.addEventListener('click', () => goTo(carouselSrcs.length - 1));
+      dotsWrap.appendChild(dot);
+
+      // пересчитать позицию
+      updateCarousel();
     });
   });
 
-  // Lightbox
+  function getSlides() { return Array.from(track.querySelectorAll('.carousel-slide')); }
+  function getDots()   { return Array.from(dotsWrap.querySelectorAll('.carousel-dot')); }
+
+  function updateCarousel() {
+    const slides = getSlides();
+    if (!slides.length) return;
+    // сдвиг: каждый слайд = 100% ширины track, центрируем curIdx
+    track.style.transform = `translateX(${-curIdx * 100}%)`;
+    slides.forEach((s, i) => s.classList.toggle('active', i === curIdx));
+    getDots().forEach((d, i) => d.classList.toggle('active', i === curIdx));
+  }
+
+  function goTo(idx) {
+    const slides = getSlides();
+    if (!slides.length) return;
+    curIdx = (idx + slides.length) % slides.length;
+    updateCarousel();
+  }
+
+  document.getElementById('cPrev').addEventListener('click', () => goTo(curIdx - 1));
+  document.getElementById('cNext').addEventListener('click', () => goTo(curIdx + 1));
+
+  // Свайп
+  let tsX = 0;
+  track.addEventListener('touchstart', e => { tsX = e.touches[0].clientX; }, {passive:true});
+  track.addEventListener('touchend',   e => {
+    const dx = e.changedTouches[0].clientX - tsX;
+    if (Math.abs(dx) > 40) goTo(dx < 0 ? curIdx + 1 : curIdx - 1);
+  });
+
+  // Авто-прокрутка
+  let autoTimer = setInterval(() => goTo(curIdx + 1), 4000);
+  document.getElementById('carouselWrap').addEventListener('mouseenter', () => clearInterval(autoTimer));
+  document.getElementById('carouselWrap').addEventListener('mouseleave', () => {
+    autoTimer = setInterval(() => goTo(curIdx + 1), 4000);
+  });
+
+  /* ── Lightbox ── */
   let lbIndex = 0;
-  function openLb(src) {
-    lbIndex = loadedSrcs.findIndex(x => x.src === src);
-    document.getElementById('lbImg').src = src;
+  function openLb(idx) {
+    lbIndex = idx;
+    document.getElementById('lbImg').src = carouselSrcs[lbIndex];
     document.getElementById('lightbox').classList.add('active');
     document.body.style.overflow = 'hidden';
   }
@@ -966,12 +1052,10 @@
     document.body.style.overflow = '';
   }
   function lbMove(dir) {
-    lbIndex = (lbIndex + dir + loadedSrcs.length) % loadedSrcs.length;
-    document.getElementById('lbImg').src = loadedSrcs[lbIndex].src;
+    lbIndex = (lbIndex + dir + carouselSrcs.length) % carouselSrcs.length;
+    document.getElementById('lbImg').src = carouselSrcs[lbIndex];
   }
-  document.getElementById('lightbox').addEventListener('click', e => {
-    if (e.target === e.currentTarget) closeLb();
-  });
+  document.getElementById('lightbox').addEventListener('click', e => { if (e.target === e.currentTarget) closeLb(); });
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') closeLb();
     if (e.key === 'ArrowRight') lbMove(1);
