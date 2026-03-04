@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \":*)",
+      "Bash(git init)",
+      "Bash(git remote add origin https://github.com/VasiliiLikhachev/apartments-site.git)",
+      "Bash(git fetch origin)",
+      "Bash(git checkout -b main)",
+      "Bash(git add .)",
+      "Bash(git commit -m \"Initial site with all content\")"
+    ]
+  }
+}
